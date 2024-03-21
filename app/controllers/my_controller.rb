@@ -16,4 +16,22 @@ class MyController < ApplicationController
         format.rss { render xml: rss_doc_for(@records).to_xml }
       end
     end
+
+    def index2
+
+      type = params[:type]
+      @type = MY_INDEX_TYPES.include?(type) ? type : 'draft'
+      #@type = MY_INDEX_TYPES.include?(params[:type]) ? params[:type] : 'draft'
+  
+      @records = MyRecord.public_send(@type).descend_by_published_at
+      @featured_records = MyRecord.featured
+  
+      @records = @records.paginate(page: params[:page], per_page: 20)
+  
+      respond_to do |format|
+        format.html
+        format.rss { render xml: rss_doc_for(@records).to_xml }
+      end
+    end
+
   end
